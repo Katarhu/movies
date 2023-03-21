@@ -15,6 +15,7 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
 import { ROUTES } from '@config'
 import Link from 'next/link'
+import Image from 'next/image'
 
 const TABLE_FIELDS = [
   'Genre',
@@ -35,9 +36,8 @@ type MoviePagePropsFailure = ErrorProps & Undefinable<IMovie>
 type MoviePageProps = MoviePagePropsSuccess | MoviePagePropsFailure
 
 const isErrorProps = (props: MoviePageProps): props is ErrorProps => {
-    return props.error !== undefined;
+  return props.error !== undefined
 }
-
 
 export default function MoviePage(props: MoviePageProps) {
   const router = useRouter()
@@ -64,7 +64,7 @@ export default function MoviePage(props: MoviePageProps) {
   const tableRows = getTableData(props, TABLE_FIELDS as (keyof IMovie)[])
 
   const movieImage =
-      props.Poster !== 'N/A' ? props.Poster : DefaultPosterImage.src
+    props.Poster !== 'N/A' ? props.Poster : DefaultPosterImage.src
 
   return (
     <Box sx={{ pb: 5 }}>
@@ -82,10 +82,12 @@ export default function MoviePage(props: MoviePageProps) {
             maxWidth: '300px',
             height: '450px',
             margin: '0 auto',
+            position: 'relative',
           }}
         >
-          <img
+          <Image
             src={movieImage}
+            fill
             style={{ objectFit: 'cover', width: '100%', height: '100%' }}
             alt={props.Plot}
           />
@@ -163,7 +165,7 @@ export const getStaticProps: GetStaticProps<MoviePageProps> = async ({
   }
 }
 
-export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
+export const getStaticPaths: GetStaticPaths<{ slug: string }> = () => {
   return {
     paths: [], //indicates that no page needs be created at build time
     fallback: true, //indicates the type of fallback

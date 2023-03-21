@@ -9,7 +9,9 @@ const instance = axios.create({
 })
 
 instance.interceptors.request.use((config) => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   config.params = config.params || {}
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   config.params['apikey'] = apiConfig.apiKey
 
   return config

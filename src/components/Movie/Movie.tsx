@@ -9,7 +9,6 @@ import {
 import { IMovie } from '@models'
 import Link from 'next/link'
 import DefaultPosterImage from '@assets/DefaultPosterImage.jpg'
-import { useAppDispatch } from '@hooks'
 import { ROUTES } from '@config'
 
 const SERIES_TYPE = 'series'
@@ -24,8 +23,6 @@ export const Movie = ({
   Genre,
   imdbID,
 }: IMovie) => {
-  const dispatch = useAppDispatch()
-
   const seriesLabel =
     Type === SERIES_TYPE ? (
       <Typography

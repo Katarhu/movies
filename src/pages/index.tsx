@@ -1,7 +1,6 @@
 import { Box, Button, Typography } from '@mui/material'
 import TitleIcon from '@mui/icons-material/Title'
 import SlideshowIcon from '@mui/icons-material/Slideshow'
-import StarBorderIcon from '@mui/icons-material/StarBorder'
 import Link from 'next/link'
 import { ROUTES } from '@config'
 
