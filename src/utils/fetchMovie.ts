@@ -6,7 +6,9 @@ import {
   SuccessfullTitleResponse,
 } from '@models'
 
-export const fetchMovie = async (id: string) => {
+export const fetchMovie = async (id?: string | number) => {
+  if (!id) return { error: "Wrong movie id" };
+
   const { data } = await axios.get<
     SuccessfullTitleResponse<IMovie> | FailureTitleResponse
   >('', {
@@ -18,13 +20,11 @@ export const fetchMovie = async (id: string) => {
 
   if (data.Response === ResponseType.FAILURE) {
     return {
-      props: {
-        error: { error: data.Error },
-      },
+       error: data.Error,
     }
   }
 
   return {
-    props: data,
+    ...data,
   }
 }

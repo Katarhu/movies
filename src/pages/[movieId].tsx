@@ -1,19 +1,20 @@
 import {
-    Box, CircularProgress,
-    Table,
-    TableBody,
-    TableCell,
-    TableRow,
-    Typography,
+  Box,
+  CircularProgress,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  Typography,
 } from '@mui/material'
 import DefaultPosterImage from '@assets/DefaultPosterImage.jpg'
 import { getTableData } from '@utils'
 import { fetchMovie } from '@/utils/fetchMovie'
-import { IMovie } from '@models'
-import { GetStaticPaths } from 'next'
+import { IMovie, Undefinable } from '@models'
+import { GetStaticPaths, GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
 import { ROUTES } from '@config'
-import Link from "next/link";
+import Link from 'next/link'
 
 const TABLE_FIELDS = [
   'Genre',
@@ -24,25 +25,38 @@ const TABLE_FIELDS = [
   'Runtime',
 ]
 
-export default function MoviePage({
-  props,
-}: {
-  props: IMovie & { error?: string }
-}) {
+interface ErrorProps {
+  error: string
+}
+
+type MoviePagePropsSuccess = IMovie & Undefinable<ErrorProps>
+type MoviePagePropsFailure = ErrorProps & Undefinable<IMovie>
+
+type MoviePageProps = MoviePagePropsSuccess | MoviePagePropsFailure
+
+const isErrorProps = (props: MoviePageProps): props is ErrorProps => {
+    return props.error !== undefined;
+}
+
+
+export default function MoviePage(props: MoviePageProps) {
   const router = useRouter()
 
   if (router.isFallback) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <CircularProgress />
+        <CircularProgress />
       </Box>
     )
   }
 
-  if (props.error) {
+  if (isErrorProps(props)) {
     return (
       <Box>
-        Something went wrong, <Link style={{color: "lightblue"}} href={ROUTES.HOME}>go back</Link>
+        Something went wrong,{' '}
+        <Link style={{ color: 'lightblue ' }} href={ROUTES.HOME}>
+          Go back
+        </Link>
       </Box>
     )
   }
@@ -50,7 +64,7 @@ export default function MoviePage({
   const tableRows = getTableData(props, TABLE_FIELDS as (keyof IMovie)[])
 
   const movieImage =
-    props.Poster !== 'N/A' ? props.Poster : DefaultPosterImage.src
+      props.Poster !== 'N/A' ? props.Poster : DefaultPosterImage.src
 
   return (
     <Box sx={{ pb: 5 }}>
@@ -133,11 +147,19 @@ export default function MoviePage({
   )
 }
 
-export async function getStaticProps({ params }) {
-  const movie = await fetchMovie(params.movieId)
+export const getStaticProps: GetStaticProps<MoviePageProps> = async ({
+  params,
+}) => {
+  const movie = await fetchMovie(params?.movieId as string)
+
+  if (movie?.error) {
+    return {
+      props: movie as MoviePagePropsFailure,
+    }
+  }
 
   return {
-    props: movie,
+    props: movie as MoviePagePropsSuccess,
   }
 }
 
